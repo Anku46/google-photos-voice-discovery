@@ -16,7 +16,7 @@ def test_budget_tracking_logic(monkeypatch, tmp_path):
     """Test that check_budget correctly counts requests and raises exception when limit is hit."""
     # Point BUDGET_FILE to a temp directory
     test_budget_file = tmp_path / "groq_budget.json"
-    import src.pipeline.groq_client
+    import backend.pipeline.groq_client
     monkeypatch.setattr(src.pipeline.groq_client, "BUDGET_FILE", str(test_budget_file))
     
     # 1st request should work
@@ -39,7 +39,7 @@ def test_budget_tracking_logic(monkeypatch, tmp_path):
 
 
 def test_model_id_from_env(monkeypatch):
-    import src.pipeline.groq_client
+    import backend.pipeline.groq_client
     
     # Missing env variable raises ValueError
     monkeypatch.delenv("GROQ_MODEL_FILTER", raising=False)

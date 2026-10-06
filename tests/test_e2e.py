@@ -10,7 +10,7 @@ import os
 import sys
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from src.app import app
+from backend.app import app
 
 client = TestClient(app)
 
@@ -70,7 +70,7 @@ class MockDbClient:
             )
         return MockTableQuery()
 
-@patch("src.app.get_client", return_value=MockDbClient())
+@patch("backend.app.get_client", return_value=MockDbClient())
 def test_metrics_api_structure(mock_db):
     """Verify metrics payload format."""
     res = client.get("/api/metrics")
@@ -82,7 +82,7 @@ def test_metrics_api_structure(mock_db):
     assert "cluster_count" in data
     assert "source_counts" in data
 
-@patch("src.app.get_client", return_value=MockDbClient())
+@patch("backend.app.get_client", return_value=MockDbClient())
 def test_clusters_provenance(mock_db):
     """Verify that if clusters exist, they are properly structured."""
     res = client.get("/api/clusters")
@@ -97,7 +97,7 @@ def test_clusters_provenance(mock_db):
         assert "is_noise_bucket" in c
         assert "review_count" in c
 
-@patch("src.app.get_client", return_value=MockDbClient())
+@patch("backend.app.get_client", return_value=MockDbClient())
 def test_top_issues_traceability(mock_db):
     """Verify top issues contain actual representative quotes and correct keys."""
     res = client.get("/api/top-issues")

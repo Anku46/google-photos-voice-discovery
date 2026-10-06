@@ -8,7 +8,7 @@ import os
 import sys
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from src.app import app
+from backend.app import app
 
 client = TestClient(app)
 
@@ -27,9 +27,9 @@ def test_auth_rejection():
     res2 = client.post("/api/chat", json={"query": "test"})
     assert res2.status_code in [401, 403]
 
-@patch("src.app.get_latest_run_id", return_value=None)
-@patch("src.app.run_pipeline")
-@patch("src.app.answer_copilot_query", return_value="Mock response")
+@patch("backend.app.get_latest_run_id", return_value=None)
+@patch("backend.app.run_pipeline")
+@patch("backend.app.answer_copilot_query", return_value="Mock response")
 def test_auth_success(mock_chat, mock_run, mock_latest, monkeypatch):
     """Test that authenticated endpoints accept calls with the correct API key."""
     monkeypatch.setenv("API_SECRET_KEY", "test-secret-123")
