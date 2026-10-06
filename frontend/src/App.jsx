@@ -251,99 +251,110 @@ export default function App() {
 
         </div>
 
-        <div className="dashboard-grid">
-          {/* Left Column */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            
-            {/* Distribution Panel */}
-            <section className="card" style={{ padding: '24px' }}>
-              <h2 style={{ fontSize: '16px', marginBottom: '16px' }}>Failure Distribution (Gaps)</h2>
-              <div style={{ height: '300px', color: '#fff' }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={distribution} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                    <XAxis type="number" stroke="#94A3B8" />
-                    <YAxis dataKey="name" type="category" stroke="#94A3B8" width={150} tick={{fontSize: 12}} />
-                    <Tooltip contentStyle={{ backgroundColor: '#1E293B', border: 'none', borderRadius: '8px', color: '#fff' }} />
-                    <Legend />
-                    <Bar dataKey="primary" stackId="a" fill="var(--color-accent-teal)" name="Primary Gap" />
-                  </BarChart>
-                </ResponsiveContainer>
+        <div className="dashboard-grid" style={{ gridTemplateColumns: '1.2fr 1fr', alignItems: 'start' }}>
+          
+          {/* Left Column: Reasons & Blockers */}
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <section className="card" style={{ padding: '24px', flex: 1 }}>
+              <div style={{ marginBottom: '24px' }}>
+                <h2 style={{ fontSize: '18px', margin: '0 0 4px 0', color: '#fff' }}>Google Photos Drop-off Reasons & Blockers</h2>
+                <p style={{ fontSize: '13px', color: 'var(--color-text-muted)', margin: 0 }}>Quantified from verified customer complaints and app store reviews</p>
               </div>
-            </section>
 
-            {/* Clusters Explorer */}
-            <section className="card" style={{ padding: '24px' }}>
-              <h2 style={{ fontSize: '16px', marginBottom: '16px' }}>Thematic Cluster Explorer</h2>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '16px' }}>
-                {clusters.map((c, i) => (
-                  <div key={i} className="card" style={{ padding: '16px', background: 'var(--color-bg)' }}>
-                    <div className="badge" style={{ marginBottom: '8px', background: c.is_noise_bucket ? '#334155' : 'var(--color-accent-violet)', color: '#fff' }}>
-                      {c.review_count} reviews
+              {/* Header row */}
+              <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+                <span style={{ background: '#ef4444', color: '#fff', padding: '4px 12px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold' }}>% Share</span>
+                <span style={{ background: 'var(--color-surface-hover)', color: '#fff', padding: '4px 12px', borderRadius: '4px', fontSize: '12px' }}>Mentions</span>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                {topIssues.map((issue, i) => {
+                  const sharePct = Math.round((issue.review_count / (metrics ? Math.round(metrics.total_reviews * (metrics.yield_percentage/100)) : 1)) * 100) || 0;
+                  return (
+                    <div key={i} style={{ border: '1px solid var(--color-border)', borderRadius: '12px', padding: '20px', background: 'var(--color-bg)' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <AlertCircle size={18} style={{ color: '#ef4444' }} />
+                          <h3 style={{ fontSize: '16px', margin: 0, fontWeight: 'bold', color: '#fff' }}>{issue.title}</h3>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <span style={{ fontSize: '16px', fontWeight: 'bold', color: 'var(--color-accent-teal)' }}>{sharePct}%</span>
+                          <span style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>{issue.review_count} mentions</span>
+                        </div>
+                      </div>
+                      
+                      {/* Progress Bar */}
+                      <div style={{ height: '6px', background: 'var(--color-surface)', borderRadius: '3px', marginBottom: '16px', overflow: 'hidden' }}>
+                        <div style={{ width: `${sharePct}%`, height: '100%', background: 'linear-gradient(90deg, #ef4444 0%, var(--color-accent-teal) 100%)', borderRadius: '3px' }}></div>
+                      </div>
+
+                      <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+                        <span style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>Category:</span>
+                        <span style={{ padding: '2px 8px', background: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6', borderRadius: '4px', fontSize: '11px' }}>{issue.category}</span>
+                      </div>
+
+                      <div style={{ fontSize: '12px', color: '#ef4444', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <MessageSquare size={12} /> Customer Evidence Quotes
+                      </div>
+
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {issue.quotes && issue.quotes.slice(0, 4).map((quote, qIdx) => (
+                          <div key={qIdx} style={{ padding: '12px 16px', background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: '8px', fontSize: '13px', color: '#CBD5E1', lineHeight: '1.4' }}>
+                            <span style={{ color: '#ef4444', marginRight: '8px' }}>"</span>{quote}<span style={{ color: '#ef4444', marginLeft: '2px' }}>"</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                    <h3 style={{ fontSize: '14px', marginBottom: '4px' }}>{c.cluster_title}</h3>
-                    <p style={{ fontSize: '12px', color: 'var(--color-text-muted)', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                      {c.cluster_description}
-                    </p>
-                  </div>
-                ))}
-                {clusters.length === 0 && <div style={{ color: 'var(--color-text-muted)' }}>No clusters yet.</div>}
+                  );
+                })}
               </div>
             </section>
-
           </div>
 
-          {/* Right Column */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            
-            {/* Top Issues */}
-            <section className="card" style={{ padding: '24px' }}>
-              <h2 style={{ fontSize: '16px', marginBottom: '16px' }}>Top Priority Issues</h2>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                {topIssues.map((issue, i) => (
-                  <div key={i} style={{ padding: '16px', background: 'var(--color-bg)', borderRadius: '8px', borderLeft: `4px solid var(--color-accent-teal)` }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <h3 style={{ fontSize: '14px', margin: 0 }}>#{issue.rank} {issue.title}</h3>
-                      <span className="badge">{issue.category}</span>
-                    </div>
-                    <p style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginTop: '8px' }}>
-                      Impact: {issue.impact_score.toFixed(1)} | Size: {issue.review_count}
-                    </p>
-                    {issue.quotes && issue.quotes.length > 0 && (
-                      <div style={{ marginTop: '12px', padding: '10px 14px', background: 'rgba(0,0,0,0.2)', borderRadius: '6px', fontSize: '12px', fontStyle: 'italic', color: '#CBD5E1', borderLeft: '2px solid #475569' }}>
-                        "{issue.quotes[0]}"
-                      </div>
-                    )}
-                  </div>
-                ))}
-                {topIssues.length === 0 && <div style={{ color: 'var(--color-text-muted)' }}>No top issues generated yet.</div>}
-              </div>
-            </section>
-
-            {/* AI Copilot */}
-            <section className="card" style={{ padding: '24px', flex: 1, display: 'flex', flexDirection: 'column' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-                <MessageSquare size={18} style={{ color: 'var(--color-accent-violet)' }}/>
-                <h2 style={{ fontSize: '16px', margin: 0 }}>AI Copilot</h2>
+          {/* Right Column: AI Copilot */}
+          <div style={{ display: 'flex', flexDirection: 'column', position: 'sticky', top: '90px' }}>
+            <section className="card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 120px)', minHeight: '600px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+                <div style={{ background: 'rgba(59, 130, 246, 0.1)', padding: '8px', borderRadius: '50%' }}>
+                  <MessageSquare size={20} style={{ color: '#3b82f6' }}/>
+                </div>
+                <div>
+                  <h2 style={{ fontSize: '16px', margin: 0, color: '#fff' }}>Google Photos AI Copilot</h2>
+                  <div style={{ fontSize: '12px', color: 'var(--color-accent-teal)' }}>Grounded in live Supabase data</div>
+                </div>
               </div>
               
-              <div style={{ flex: 1, overflowY: 'auto', border: '1px solid var(--color-border)', borderRadius: '8px', padding: '16px', marginBottom: '12px', minHeight: '300px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <div style={{ color: 'var(--color-text-muted)', fontSize: '12px', textAlign: 'center' }}>
-                  Ask me about specific search failures, quotes, or aggregate counts...
+              <div style={{ flex: 1, overflowY: 'auto', paddingRight: '8px', display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '16px' }}>
+                <div style={{ padding: '16px', background: 'var(--color-surface)', borderRadius: '12px', border: '1px solid var(--color-border)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#ef4444', fontSize: '12px', fontWeight: 'bold', marginBottom: '8px' }}>
+                    <Search size={14} /> Groq Llama 3.1 Analyst
+                  </div>
+                  <div style={{ fontSize: '13px', color: '#CBD5E1', lineHeight: '1.5' }}>
+                    Hello! I'm the Google Photos Insights Copilot. I analyze real user reviews to explain why users are frustrated or dropping off. Ask me anything, or click a suggestion below!
+                  </div>
                 </div>
+
                 {chatHistory.map((msg, i) => (
                   <div key={i} style={{ 
                     alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
-                    background: msg.role === 'user' ? 'var(--color-accent-teal)' : 'var(--color-bg)',
-                    padding: '8px 12px', borderRadius: '8px', maxWidth: '80%', fontSize: '13px',
-                    border: msg.role === 'ai' ? '1px solid var(--color-border)' : 'none'
+                    background: msg.role === 'user' ? '#ef4444' : 'var(--color-surface)',
+                    color: msg.role === 'user' ? '#fff' : '#CBD5E1',
+                    padding: '12px 16px', borderRadius: '12px', maxWidth: '85%', fontSize: '13px', lineHeight: '1.5',
+                    border: msg.role === 'ai' ? '1px solid var(--color-border)' : 'none',
+                    borderBottomRightRadius: msg.role === 'user' ? '4px' : '12px',
+                    borderTopLeftRadius: msg.role === 'ai' ? '4px' : '12px'
                   }}>
+                    {msg.role === 'ai' && (
+                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#ef4444', fontSize: '12px', fontWeight: 'bold', marginBottom: '8px' }}>
+                         <Search size={14} /> Groq Llama 3.1 Analyst
+                       </div>
+                    )}
                     {msg.content}
                   </div>
                 ))}
               </div>
 
-              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '12px' }}>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '16px' }}>
                 <button onClick={() => submitChat("Can you summarize the top issues?")} style={{ background: 'var(--color-surface-hover)', border: '1px solid var(--color-border)', borderRadius: '16px', padding: '6px 12px', fontSize: '11px', color: '#CBD5E1', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
                   📊 Top issues
                 </button>
@@ -364,10 +375,9 @@ export default function App() {
                 value={chatQuery}
                 onChange={(e) => setChatQuery(e.target.value)}
                 onKeyDown={handleChat}
-                style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--color-border)', background: 'var(--color-bg)', color: '#fff', outline: 'none' }} 
+                style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '1px solid var(--color-border)', background: 'var(--color-bg)', color: '#fff', outline: 'none' }} 
               />
             </section>
-            
           </div>
         </div>
 
