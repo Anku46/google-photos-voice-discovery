@@ -190,9 +190,6 @@ export default function App() {
             <button className="card" onClick={() => navigateTo('/mvp')} style={{ padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(59, 130, 246, 0.2)', cursor: 'pointer', color: '#3b82f6', border: '1px solid rgba(59, 130, 246, 0.4)' }}>
               <Beaker size={16} /> Open MVP Prototype
             </button>
-            <button className="card" onClick={handleRunPipeline} style={{ padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--color-surface-hover)', cursor: 'pointer', color: '#fff', border: 'none' }}>
-              <Play size={16} /> Run Pipeline
-            </button>
           </div>
         </div>
       </header>
