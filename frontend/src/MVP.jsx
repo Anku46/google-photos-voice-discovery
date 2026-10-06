@@ -7,6 +7,7 @@ export default function MVP({ onClose }) {
   const [chatLog, setChatLog] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [aiFilterTags, setAiFilterTags] = useState([]);
+  const [recoveryMode, setRecoveryMode] = useState(false);
 
   // Traditional Dropdown Filters
   const [filterTimeline, setFilterTimeline] = useState('All');
@@ -25,9 +26,14 @@ export default function MVP({ onClose }) {
         const lowerQ = userQ.toLowerCase();
         
         let foundTags = [];
+        let isRecovery = false;
         let aiResponse = "I couldn't find an exact match for that. Do you remember any colors, objects, or who you were with?";
 
-        if (lowerQ.includes('sick') || lowerQ.includes('medicine')) {
+        if (lowerQ.includes('lost') || lowerQ.includes('deleted') || lowerQ.includes('missing') || lowerQ.includes('find')) {
+          aiResponse = "Don't panic! It looks like you're searching for missing photos. I checked your sync status and found 15 photos in your Trash, and 15 photos that haven't synced from your old phone yet. Here they are:";
+          isRecovery = true;
+        }
+        else if (lowerQ.includes('sick') || lowerQ.includes('medicine')) {
           aiResponse = "I found a few photos from when you were sick. Are you looking for the medicine bottle or the thermometer?";
           foundTags = ['sick'];
         } 
@@ -57,8 +63,12 @@ export default function MVP({ onClose }) {
         }
 
         setChatLog(prev => [...prev, { role: 'ai', text: aiResponse }]);
-        if (foundTags.length > 0) {
+        
+        setRecoveryMode(isRecovery);
+        if (!isRecovery && foundTags.length > 0) {
           setAiFilterTags(foundTags);
+        } else if (isRecovery) {
+          setAiFilterTags([]);
         }
       }, 1000);
     }
@@ -66,6 +76,11 @@ export default function MVP({ onClose }) {
 
   const activePhotos = useMemo(() => {
     return DUMMY_PHOTOS.filter(photo => {
+      // 3. Recovery Mode Override
+      if (recoveryMode) {
+        return photo.syncStatus !== 'Backed Up';
+      }
+
       // 1. Traditional Filters
       if (filterTimeline !== 'All' && photo.timeline !== filterTimeline) return false;
       if (filterLocation !== 'All' && photo.location !== filterLocation) return false;
@@ -76,9 +91,10 @@ export default function MVP({ onClose }) {
         const matchesAi = aiFilterTags.some(tag => photo.tags.includes(tag));
         if (!matchesAi) return false;
       }
+      
       return true;
     });
-  }, [filterTimeline, filterLocation, filterPeople, aiFilterTags]);
+  }, [filterTimeline, filterLocation, filterPeople, aiFilterTags, recoveryMode]);
 
   return (
     <div style={{ backgroundColor: '#fff', color: '#202124', minHeight: '100vh', fontFamily: 'sans-serif', display: 'flex', flexDirection: 'column' }}>
@@ -190,17 +206,22 @@ export default function MVP({ onClose }) {
               <h2 style={{ fontSize: '14px', color: '#5f6368', textTransform: 'uppercase', letterSpacing: '0.5px', margin: 0 }}>
                 {activePhotos.length === DUMMY_PHOTOS.length ? 'Recent Highlights' : `Found ${activePhotos.length} results`}
               </h2>
-              {aiFilterTags.length > 0 && (
-                <button onClick={() => setAiFilterTags([])} style={{ fontSize: '12px', color: '#1a73e8', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>
+              {aiFilterTags.length > 0 || recoveryMode ? (
+                <button onClick={() => { setAiFilterTags([]); setRecoveryMode(false); }} style={{ fontSize: '12px', color: '#1a73e8', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>
                   Clear AI Filters
                 </button>
-              )}
+              ) : null}
             </div>
             
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '16px' }}>
               {activePhotos.map(photo => (
                 <div key={photo.id} style={{ aspectRatio: '1', borderRadius: '12px', overflow: 'hidden', backgroundColor: '#f1f3f4', position: 'relative' }}>
                   <img src={photo.url} alt="Memory" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  {photo.syncStatus !== 'Backed Up' && (
+                    <div style={{ position: 'absolute', top: '8px', right: '8px', background: photo.syncStatus === 'In Trash' ? '#ea4335' : '#fbbc04', color: photo.syncStatus === 'In Trash' ? '#fff' : '#000', fontSize: '10px', padding: '4px 8px', borderRadius: '12px', fontWeight: 'bold' }}>
+                      {photo.syncStatus}
+                    </div>
+                  )}
                   <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '8px', background: 'linear-gradient(transparent, rgba(0,0,0,0.7))', color: '#fff', fontSize: '10px', display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
                     {photo.tags.slice(0, 3).map(t => <span key={t} style={{background: 'rgba(255,255,255,0.2)', padding: '2px 6px', borderRadius: '4px'}}>{t}</span>)}
                   </div>

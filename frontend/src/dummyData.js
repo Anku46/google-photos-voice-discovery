@@ -19,6 +19,7 @@ export const THEMES = [
 export const LOCATIONS = ['Goa', 'Paris', 'Mumbai', 'London', 'Home', 'Office', 'Mountains', 'Unknown'];
 export const PEOPLE = ['Mom', 'Dad', 'Sarah', 'Mike', 'John', 'David', 'Emma', 'None'];
 export const TIMELINES = ['2022', '2023', '2024', 'Last Month', 'Last Week'];
+export const SYNC_STATUS = ['Backed Up', 'In Trash', 'Device Only (Pending Sync)', 'Archived'];
 
 export const DUMMY_PHOTOS = THEMES.flatMap((theme, themeIdx) => 
   Array.from({ length: 10 }).map((_, i) => {
@@ -31,7 +32,8 @@ export const DUMMY_PHOTOS = THEMES.flatMap((theme, themeIdx) =>
       theme: theme.name,
       timeline: `${year}`,
       location: LOCATIONS[(themeIdx + i) % LOCATIONS.length],
-      people: PEOPLE[(themeIdx * 2 + i) % PEOPLE.length]
+      people: PEOPLE[(themeIdx * 2 + i) % PEOPLE.length],
+      syncStatus: (i === 9) ? 'In Trash' : (i === 8) ? 'Device Only (Pending Sync)' : 'Backed Up'
     };
   })
 );
