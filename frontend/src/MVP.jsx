@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Mic, ChevronLeft, Filter } from 'lucide-react';
+import { Search, Mic, ChevronLeft, Filter, Trash2, Image as ImageIcon } from 'lucide-react';
 import { DUMMY_PHOTOS, TIMELINES, LOCATIONS, PEOPLE } from './dummyData';
+import Cleanup from './Cleanup';
 
 export default function MVP({ onClose }) {
   const [query, setQuery] = useState('');
@@ -8,6 +9,7 @@ export default function MVP({ onClose }) {
   const [isTyping, setIsTyping] = useState(false);
   const [aiFilterTags, setAiFilterTags] = useState([]);
   const [recoveryMode, setRecoveryMode] = useState(false);
+  const [activeTab, setActiveTab] = useState('search'); // 'search' or 'cleanup'
 
   // Traditional Dropdown Filters
   const [filterTimeline, setFilterTimeline] = useState('All');
@@ -110,11 +112,28 @@ export default function MVP({ onClose }) {
       </div>
 
       <div style={{ display: 'flex', flex: 1 }}>
-        {/* Left Sidebar: Traditional Filters */}
+        {/* Left Sidebar: Navigation & Filters */}
         <div style={{ width: '280px', borderRight: '1px solid #dadce0', padding: '24px', backgroundColor: '#f8f9fa' }}>
-          <h2 style={{ fontSize: '14px', color: '#5f6368', marginBottom: '24px', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Filter size={16} /> Traditional Search
-          </h2>
+          
+          <div style={{ marginBottom: '32px' }}>
+            <h2 style={{ fontSize: '14px', color: '#5f6368', marginBottom: '16px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              Menu
+            </h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <button onClick={() => setActiveTab('search')} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderRadius: '8px', cursor: 'pointer', border: 'none', background: activeTab === 'search' ? '#e8f0fe' : 'transparent', color: activeTab === 'search' ? '#1a73e8' : '#3c4043', fontWeight: activeTab === 'search' ? 'bold' : 'normal', textAlign: 'left', width: '100%' }}>
+                <ImageIcon size={20} /> Memories & Search
+              </button>
+              <button onClick={() => setActiveTab('cleanup')} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderRadius: '8px', cursor: 'pointer', border: 'none', background: activeTab === 'cleanup' ? '#e8f0fe' : 'transparent', color: activeTab === 'cleanup' ? '#1a73e8' : '#3c4043', fontWeight: activeTab === 'cleanup' ? 'bold' : 'normal', textAlign: 'left', width: '100%' }}>
+                <Trash2 size={20} /> Auto-Cleanup
+              </button>
+            </div>
+          </div>
+
+          {activeTab === 'search' && (
+            <>
+              <h2 style={{ fontSize: '14px', color: '#5f6368', marginBottom: '24px', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Filter size={16} /> Traditional Search
+              </h2>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             <div>
@@ -142,17 +161,23 @@ export default function MVP({ onClose }) {
             </div>
           </div>
           
-          <div style={{ marginTop: '32px', fontSize: '12px', color: '#80868b', lineHeight: '1.5' }}>
-            <p><strong>Status:</strong> Loaded {DUMMY_PHOTOS.length} photos across 15 themes.</p>
-            <p>Traditional filters break down when the user doesn't know the exact date, person, or GPS location. Try using the AI search on the right instead!</p>
-          </div>
+              <div style={{ marginTop: '32px', fontSize: '12px', color: '#80868b', lineHeight: '1.5' }}>
+                <p><strong>Status:</strong> Loaded {DUMMY_PHOTOS.length} photos across 15 themes.</p>
+                <p>Traditional filters break down when the user doesn't know the exact date, person, or GPS location. Try using the AI search on the right instead!</p>
+              </div>
+            </>
+          )}
         </div>
 
-        {/* Main Content: AI Search & Grid */}
-        <div style={{ flex: 1, padding: '32px', display: 'flex', flexDirection: 'column' }}>
+        {/* Main Content */}
+        <div style={{ flex: 1, padding: activeTab === 'search' ? '32px' : '0', display: 'flex', flexDirection: 'column', backgroundColor: '#fff', overflowY: 'auto' }}>
           
-          {/* Search Bar Area */}
-          <div style={{ marginBottom: '32px' }}>
+          {activeTab === 'cleanup' ? (
+            <Cleanup embedded={true} onClose={() => setActiveTab('search')} />
+          ) : (
+            <>
+              {/* Search Bar Area */}
+              <div style={{ marginBottom: '32px' }}>
             <h1 style={{ fontSize: '24px', textAlign: 'center', marginBottom: '24px', fontWeight: '400' }}>AI Memory Search</h1>
             
             <div style={{ position: 'relative', maxWidth: '700px', margin: '0 auto' }}>
@@ -236,6 +261,8 @@ export default function MVP({ onClose }) {
               </div>
             )}
           </div>
+            </>
+          )}
         </div>
       </div>
     </div>

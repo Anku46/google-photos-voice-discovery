@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Play, MessageSquare, AlertCircle, Layers, Inbox, Server, Filter, Beaker, Trash2 } from 'lucide-react';
+import { Search, Play, MessageSquare, AlertCircle, Layers, Inbox, Server, Filter, Beaker } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts';
 import './index.css';
 import fallbackData from './top5_issues_analysis.json';
 import MVP from './MVP';
-import Cleanup from './Cleanup';
 
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
@@ -169,10 +168,6 @@ export default function App() {
     return <MVP onClose={() => navigateTo('/')} />;
   }
 
-  if (currentPath === '/cleanup') {
-    return <Cleanup onClose={() => navigateTo('/')} />;
-  }
-
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <header className="glass-header" style={{ position: 'sticky', top: 0, zIndex: 100, padding: '16px 0' }}>
@@ -192,9 +187,6 @@ export default function App() {
           </div>
           
           <div style={{ display: 'flex', gap: '12px' }}>
-            <button className="card" onClick={() => navigateTo('/cleanup')} style={{ padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(234, 67, 53, 0.1)', cursor: 'pointer', color: '#ea4335', border: '1px solid rgba(234, 67, 53, 0.4)' }}>
-              <Trash2 size={16} /> Auto-Cleanup
-            </button>
             <button className="card" onClick={() => navigateTo('/mvp')} style={{ padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(59, 130, 246, 0.2)', cursor: 'pointer', color: '#3b82f6', border: '1px solid rgba(59, 130, 246, 0.4)' }}>
               <Beaker size={16} /> Open MVP Prototype
             </button>

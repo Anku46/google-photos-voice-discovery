@@ -13,7 +13,7 @@ const MOCK_INACTIVE = [
   { id: 'i3', url: 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=400&q=80', reason: 'Not viewed in 3 years' },
 ];
 
-export default function Cleanup({ onClose }) {
+export default function Cleanup({ onClose, embedded }) {
   const [view, setView] = useState('notifications'); // 'notifications', 'review-dupes', 'review-inactive', 'confirm-dupe'
   const [selectedPhoto, setSelectedPhoto] = useState(null);
   
@@ -42,21 +42,35 @@ export default function Cleanup({ onClose }) {
   };
 
   return (
-    <div style={{ backgroundColor: '#fff', color: '#202124', minHeight: '100vh', fontFamily: 'sans-serif', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ backgroundColor: '#fff', color: '#202124', height: embedded ? '100%' : 'minHeight: 100vh', fontFamily: 'sans-serif', display: 'flex', flexDirection: 'column' }}>
       
-      {/* Top Nav */}
-      <div style={{ display: 'flex', alignItems: 'center', padding: '16px 24px', borderBottom: '1px solid #dadce0', position: 'sticky', top: 0, backgroundColor: '#fff', zIndex: 10 }}>
-        <button 
-          onClick={() => view === 'notifications' ? onClose() : setView('notifications')} 
-          style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', color: '#1a73e8', fontWeight: 'bold' }}
-        >
-          <ChevronLeft size={20} /> {view === 'notifications' ? 'Back to Dashboard' : 'Back to Notifications'}
-        </button>
-        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '12px', color: '#5f6368' }}>
-          <span style={{ fontSize: '18px', fontWeight: '500' }}>Google Photos</span>
-          <span style={{ backgroundColor: '#e8f0fe', color: '#1a73e8', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold' }}>Auto-Cleanup</span>
+      {/* Top Nav (only if not embedded) */}
+      {!embedded && (
+        <div style={{ display: 'flex', alignItems: 'center', padding: '16px 24px', borderBottom: '1px solid #dadce0', position: 'sticky', top: 0, backgroundColor: '#fff', zIndex: 10 }}>
+          <button 
+            onClick={() => view === 'notifications' ? onClose() : setView('notifications')} 
+            style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', color: '#1a73e8', fontWeight: 'bold' }}
+          >
+            <ChevronLeft size={20} /> {view === 'notifications' ? 'Back to Dashboard' : 'Back to Notifications'}
+          </button>
+          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '12px', color: '#5f6368' }}>
+            <span style={{ fontSize: '18px', fontWeight: '500' }}>Google Photos</span>
+            <span style={{ backgroundColor: '#e8f0fe', color: '#1a73e8', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold' }}>Auto-Cleanup</span>
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* Embedded Nav Header (if embedded and not on notifications) */}
+      {embedded && view !== 'notifications' && (
+        <div style={{ padding: '16px 24px', borderBottom: '1px solid #dadce0' }}>
+          <button 
+            onClick={() => setView('notifications')} 
+            style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', color: '#1a73e8', fontWeight: 'bold' }}
+          >
+            <ChevronLeft size={20} /> Back to Notifications
+          </button>
+        </div>
+      )}
 
       <div style={{ maxWidth: '800px', margin: '0 auto', padding: '32px 16px', width: '100%' }}>
         
