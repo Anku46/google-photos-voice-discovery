@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Mic, ChevronLeft, Filter, Trash2, Image as ImageIcon } from 'lucide-react';
+import { Search, Mic, ChevronLeft, Filter, Trash2, Image as ImageIcon, Settings, Trash } from 'lucide-react';
 import { DUMMY_PHOTOS, TIMELINES, LOCATIONS, PEOPLE } from './dummyData';
 import Cleanup from './Cleanup';
 
@@ -9,7 +9,9 @@ export default function MVP({ onClose }) {
   const [isTyping, setIsTyping] = useState(false);
   const [aiFilterTags, setAiFilterTags] = useState([]);
   const [recoveryMode, setRecoveryMode] = useState(false);
-  const [activeTab, setActiveTab] = useState('search'); // 'search' or 'cleanup'
+  const [activeTab, setActiveTab] = useState('search'); // 'search' or 'cleanup' or 'deleted'
+  const [showSettings, setShowSettings] = useState(false);
+  const [restoredIds, setRestoredIds] = useState(new Set());
 
   // Traditional Dropdown Filters
   const [filterTimeline, setFilterTimeline] = useState('All');
@@ -78,6 +80,8 @@ export default function MVP({ onClose }) {
 
   const activePhotos = useMemo(() => {
     return DUMMY_PHOTOS.filter(photo => {
+      if (restoredIds.has(photo.id)) return true; // always show restored ones in gallery
+
       // 3. Recovery Mode Override
       if (recoveryMode) {
         return photo.syncStatus !== 'Backed Up';
@@ -96,7 +100,25 @@ export default function MVP({ onClose }) {
       
       return true;
     });
-  }, [filterTimeline, filterLocation, filterPeople, aiFilterTags, recoveryMode]);
+  }, [filterTimeline, filterLocation, filterPeople, aiFilterTags, recoveryMode, restoredIds]);
+
+  const groupedTimeline = useMemo(() => {
+    const groups = {};
+    activePhotos.forEach(p => {
+      if (!groups[p.dateGroup]) groups[p.dateGroup] = [];
+      groups[p.dateGroup].push(p);
+    });
+    return groups;
+  }, [activePhotos]);
+
+  const deletedPhotosGrouped = useMemo(() => {
+    const groups = {};
+    DUMMY_PHOTOS.filter(p => !restoredIds.has(p.id) && p.syncStatus === 'In Trash').forEach(p => {
+      if (!groups[p.deletedGroup]) groups[p.deletedGroup] = [];
+      groups[p.deletedGroup].push(p);
+    });
+    return groups;
+  }, [restoredIds]);
 
   return (
     <div style={{ backgroundColor: '#fff', color: '#202124', minHeight: '100vh', fontFamily: 'sans-serif', display: 'flex', flexDirection: 'column' }}>
@@ -116,9 +138,19 @@ export default function MVP({ onClose }) {
         <div style={{ width: '280px', borderRight: '1px solid #dadce0', padding: '24px', backgroundColor: '#f8f9fa' }}>
           
           <div style={{ marginBottom: '32px' }}>
-            <h2 style={{ fontSize: '14px', color: '#5f6368', marginBottom: '16px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-              Menu
-            </h2>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+              <h2 style={{ fontSize: '14px', color: '#5f6368', textTransform: 'uppercase', letterSpacing: '0.5px', margin: 0 }}>
+                Menu
+              </h2>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <button onClick={() => setShowSettings(!showSettings)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#5f6368' }} title="Settings">
+                  <Settings size={18} />
+                </button>
+                <button onClick={() => setActiveTab('deleted')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#5f6368' }} title="Deleted Photos">
+                  <Trash size={18} />
+                </button>
+              </div>
+            </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <button onClick={() => setActiveTab('search')} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderRadius: '8px', cursor: 'pointer', border: 'none', background: activeTab === 'search' ? '#e8f0fe' : 'transparent', color: activeTab === 'search' ? '#1a73e8' : '#3c4043', fontWeight: activeTab === 'search' ? 'bold' : 'normal', textAlign: 'left', width: '100%' }}>
                 <ImageIcon size={20} /> Memories & Search
@@ -165,15 +197,53 @@ export default function MVP({ onClose }) {
                 <p><strong>Status:</strong> Loaded {DUMMY_PHOTOS.length} photos across 15 themes.</p>
                 <p>Traditional filters break down when the user doesn't know the exact date, person, or GPS location. Try using the AI search on the right instead!</p>
               </div>
+
+              {showSettings && (
+                <div style={{ marginTop: '32px' }}>
+                  <h2 style={{ fontSize: '14px', color: '#5f6368', marginBottom: '16px', textTransform: 'uppercase' }}>Settings</h2>
+                  {['Account', 'Backup & Sync', 'Storage', 'Notifications', 'Privacy', 'Appearance', 'Help & Feedback'].map(s => (
+                    <div key={s} style={{ padding: '12px 0', borderBottom: '1px solid #dadce0', fontSize: '13px', color: '#3c4043', cursor: 'pointer' }}>
+                      {s}
+                    </div>
+                  ))}
+                </div>
+              )}
             </>
           )}
         </div>
 
         {/* Main Content */}
-        <div style={{ flex: 1, padding: activeTab === 'search' ? '32px' : '0', display: 'flex', flexDirection: 'column', backgroundColor: '#fff', overflowY: 'auto' }}>
+        <div style={{ flex: 1, padding: activeTab === 'search' ? '32px' : '0', display: 'flex', flexDirection: 'column', backgroundColor: '#fff', overflowY: 'auto', position: 'relative' }}>
           
           {activeTab === 'cleanup' ? (
             <Cleanup embedded={true} onClose={() => setActiveTab('search')} />
+          ) : activeTab === 'deleted' ? (
+            <div style={{ padding: '32px', maxWidth: '800px', margin: '0 auto', width: '100%' }}>
+              <h1 style={{ fontSize: '24px', marginBottom: '8px', fontWeight: '400', color: '#174ea6' }}>Deleted Photos</h1>
+              <p style={{ color: '#5f6368', marginBottom: '32px' }}>Items here will be permanently deleted after 60 days. Select to restore them to your gallery.</p>
+              
+              {Object.keys(deletedPhotosGrouped).length === 0 ? (
+                <p style={{ color: '#80868b', textAlign: 'center', padding: '40px' }}>No deleted photos.</p>
+              ) : (
+                Object.keys(deletedPhotosGrouped).map(group => (
+                  <div key={group} style={{ marginBottom: '32px' }}>
+                    <h3 style={{ fontSize: '14px', color: '#5f6368', marginBottom: '16px' }}>{group}</h3>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '16px' }}>
+                      {deletedPhotosGrouped[group].map(photo => (
+                        <div key={photo.id} style={{ aspectRatio: '1', borderRadius: '12px', overflow: 'hidden', backgroundColor: '#f1f3f4', position: 'relative' }}>
+                          <img src={photo.url} alt="Deleted" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8 }} />
+                          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '8px', background: 'linear-gradient(transparent, rgba(0,0,0,0.8))', display: 'flex', justifyContent: 'center' }}>
+                            <button onClick={() => setRestoredIds(prev => new Set(prev).add(photo.id))} style={{ background: '#fff', color: '#1a73e8', border: 'none', padding: '6px 12px', borderRadius: '16px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer' }}>
+                              Restore
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
           ) : (
             <>
               {/* Search Bar Area */}
@@ -238,28 +308,44 @@ export default function MVP({ onClose }) {
               ) : null}
             </div>
             
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '16px' }}>
-              {activePhotos.map(photo => (
-                <div key={photo.id} style={{ aspectRatio: '1', borderRadius: '12px', overflow: 'hidden', backgroundColor: '#f1f3f4', position: 'relative' }}>
-                  <img src={photo.url} alt="Memory" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  {photo.syncStatus !== 'Backed Up' && (
-                    <div style={{ position: 'absolute', top: '8px', right: '8px', background: photo.syncStatus === 'In Trash' ? '#ea4335' : '#fbbc04', color: photo.syncStatus === 'In Trash' ? '#fff' : '#000', fontSize: '10px', padding: '4px 8px', borderRadius: '12px', fontWeight: 'bold' }}>
-                      {photo.syncStatus}
+            <div style={{ flex: 1, display: 'flex' }}>
+              <div style={{ flex: 1 }}>
+                {Object.keys(groupedTimeline).map(dateGroup => (
+                  <div id={`group-${dateGroup.replace(/\s+/g, '-')}`} key={dateGroup} style={{ marginBottom: '32px' }}>
+                    <h3 style={{ fontSize: '14px', color: '#5f6368', marginBottom: '16px', position: 'sticky', top: 0, background: 'rgba(255,255,255,0.9)', padding: '8px 0', zIndex: 5 }}>
+                      {dateGroup}
+                    </h3>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '16px' }}>
+                      {groupedTimeline[dateGroup].map(photo => (
+                        <div key={photo.id} style={{ aspectRatio: '1', borderRadius: '12px', overflow: 'hidden', backgroundColor: '#f1f3f4', position: 'relative' }}>
+                          <img src={photo.url} alt="Memory" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        </div>
+                      ))}
                     </div>
-                  )}
-                  <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '8px', background: 'linear-gradient(transparent, rgba(0,0,0,0.7))', color: '#fff', fontSize: '10px', display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
-                    {photo.tags.slice(0, 3).map(t => <span key={t} style={{background: 'rgba(255,255,255,0.2)', padding: '2px 6px', borderRadius: '4px'}}>{t}</span>)}
                   </div>
-                </div>
-              ))}
-            </div>
-            
-            {activePhotos.length === 0 && (
-              <div style={{ textAlign: 'center', padding: '64px', color: '#80868b' }}>
-                <Search size={48} style={{ opacity: 0.2, margin: '0 auto 16px auto', display: 'block' }} />
-                <p>No photos match your current filters.</p>
+                ))}
+                
+                {activePhotos.length === 0 && (
+                  <div style={{ textAlign: 'center', padding: '64px', color: '#80868b' }}>
+                    <Search size={48} style={{ opacity: 0.2, margin: '0 auto 16px auto', display: 'block' }} />
+                    <p>No photos match your current filters.</p>
+                  </div>
+                )}
               </div>
-            )}
+              
+              {/* Date Scrubber */}
+              {Object.keys(groupedTimeline).length > 0 && (
+                <div style={{ width: '40px', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingLeft: '16px', position: 'sticky', top: 0, height: 'max-content' }}>
+                  {Object.keys(groupedTimeline).map(dateGroup => (
+                    <div key={dateGroup} onClick={() => {
+                      document.getElementById(`group-${dateGroup.replace(/\s+/g, '-')}`)?.scrollIntoView({ behavior: 'smooth' });
+                    }} style={{ fontSize: '10px', color: '#80868b', margin: '4px 0', cursor: 'pointer', textAlign: 'center', wordBreak: 'break-word', writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
+                      {dateGroup.includes(' ') ? dateGroup.split(' ')[1] : dateGroup}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
             </>
           )}
