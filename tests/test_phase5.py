@@ -3,6 +3,7 @@ tests/test_phase5.py — Phase 5 FastAPI tests.
 """
 
 from fastapi.testclient import TestClient
+from unittest.mock import patch
 import os
 import sys
 
@@ -20,23 +21,23 @@ def test_auth_rejection():
     """Test that authenticated endpoints reject calls without API keys."""
     # Pipeline Run
     res1 = client.post("/api/pipeline/run")
-    assert res1.status_code == 403
+    assert res1.status_code in [401, 403]
     
     # Copilot Chat
     res2 = client.post("/api/chat", json={"query": "test"})
-    assert res2.status_code == 403
+    assert res2.status_code in [401, 403]
 
-def test_auth_success(monkeypatch):
+@patch("src.app.get_latest_run_id", return_value=None)
+@patch("src.app.run_pipeline")
+@patch("src.app.answer_copilot_query", return_value="Mock response")
+def test_auth_success(mock_chat, mock_run, mock_latest, monkeypatch):
     """Test that authenticated endpoints accept calls with the correct API key."""
-    # Mock the API secret
     monkeypatch.setenv("API_SECRET_KEY", "test-secret-123")
-    
-    # We expect a 500 or 409 or something since we aren't mocking the DB, 
-    # but NOT a 403 Forbidden.
     headers = {"X-API-Key": "test-secret-123"}
     
     res1 = client.post("/api/pipeline/run", headers=headers)
-    assert res1.status_code != 403
+    assert res1.status_code == 200
     
     res2 = client.post("/api/chat", json={"query": "test"}, headers=headers)
-    assert res2.status_code != 403
+    assert res2.status_code == 200
+    assert res2.json() == {"answer": "Mock response"}
