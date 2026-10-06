@@ -1,0 +1,74 @@
+{
+  "total_reviews_analyzed": 39,
+  "top_5_issues": [
+    {
+      "rank": 1,
+      "issue_title": "Unexpected Photo Deletion & Data Loss",
+      "category": "Sync/Deletion Policy",
+      "frequency_and_impact": "Very common (≈10 reviews); high impact as users lose irreplaceable photos.",
+      "root_cause_summary": "Sync‑out‑of‑sync alerts and aggressive cloud deletion remove local files without clear warnings; out‑of‑space errors also trigger loss.",
+      "representative_quotes": [
+        "Lost nearly 550 photos this is insane??",
+        "It deleted 10 GB of my photos",
+        "wont open, says its out of space",
+        "it removes my photos from the screen",
+        "My account was hacked and all of my photos are gone"
+      ],
+      "actionable_recommendation": "Introduce a confirmation step before cloud‑initiated deletions, add a reversible trash for local files, and improve out‑of‑space handling with clear alerts."
+    },
+    {
+      "rank": 2,
+      "issue_title": "AI Features Breaking Search & Organization",
+      "category": "Search & Retrieval",
+      "frequency_and_impact": "Frequent (≈6 reviews); severe impact as core photo discovery stops working.",
+      "root_cause_summary": "Recent AI updates override traditional search, face grouping, and similarity stacks, leading to inaccurate results and UI clutter.",
+      "representative_quotes": [
+        "AI updates have made this app unusable",
+        "Why is face grouping not working even though I have it enabled",
+        "the AI will just tell you that it didn't have what you were looking for",
+        "I don't want any similar stack now"
+      ],
+      "actionable_recommendation": "Separate AI suggestions from core search, allow users to toggle AI features, and restore reliable face/grouping functionality."
+    },
+    {
+      "rank": 3,
+      "issue_title": "Lack of Backup Control & Forced Storage Costs",
+      "category": "Storage & Backup",
+      "frequency_and_impact": "Common (≈4 reviews); moderate impact due to unexpected mobile data usage and inability to delete.",
+      "root_cause_summary": "No Wi‑Fi‑only backup option and restrictive deletion policies force users to consume data and pay for extra storage.",
+      "representative_quotes": [
+        "no \"only backup using wifi\" my months mobile data was completely used up",
+        "you can't delete the photos later on. It forces you to pay the subscription",
+        "No option to delete only on drive"
+      ],
+      "actionable_recommendation": "Add a Wi‑Fi‑only backup toggle, simplify bulk‑delete with optional permanent removal, and clarify storage‑plan options."
+    },
+    {
+      "rank": 4,
+      "issue_title": "UI Regression & Inconsistent Thumbnails",
+      "category": "UI/Playback",
+      "frequency_and_impact": "Moderate (≈5 reviews); reduces usability and visual consistency.",
+      "root_cause_summary": "Recent UI redesign introduced uneven thumbnail sizes and removed familiar editing tools, confusing users.",
+      "representative_quotes": [
+        "add a setting to make all thumbnails exactly the same size",
+        "Poot UI update reduces usability",
+        "the update removed the edit video options"
+      ],
+      "actionable_recommendation": "Standardize thumbnail dimensions, restore removed video‑edit controls, and provide an optional classic UI mode."
+    },
+    {
+      "rank": 5,
+      "issue_title": "Inaccessible or Missing Backed‑Up Content",
+      "category": "Sync/Locked Folder",
+      "frequency_and_impact": "Moderate (≈5 reviews); hampers trust in backup reliability.",
+      "root_cause_summary": "Sync inconsistencies and locked‑folder handling cause backed‑up photos and videos to disappear from the app.",
+      "representative_quotes": [
+        "doesn't show all my photos in my account",
+        "can't find some of my pictures and videos that were already backed up",
+        "I can't find some of the pictures I even put in the locked folder"
+      ],
+      "actionable_recommendation": "Implement a sync health dashboard, ensure locked‑folder items are always visible, and add a recovery tool for missing backed‑up media."
+    }
+  ],
+  "overall_sentiment_summary": "Negative sentiment dominates, with users reporting data loss, broken AI/search features, uncontrolled data usage, UI regressions, and inaccessible backed‑up content."
+}
