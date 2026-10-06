@@ -49,7 +49,7 @@ export default function App() {
   const handleRunPipeline = async () => {
     setPipelineStatus('running');
     try {
-      await fetch(`${API_BASE}/api/pipeline/run`, { method: 'POST', headers: {'X-API-Key': 'development_only'} });
+      await fetch(`${API_BASE}/api/pipeline/run`, { method: 'POST', headers: {'X-API-Key': import.meta.env.VITE_API_SECRET_KEY || 'development_only'} });
     } catch (e) {
       console.error(e);
     }
@@ -63,7 +63,7 @@ export default function App() {
       try {
         const res = await fetch(`${API_BASE}/api/chat`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'X-API-Key': 'development_only' },
+          headers: { 'Content-Type': 'application/json', 'X-API-Key': import.meta.env.VITE_API_SECRET_KEY || 'development_only' },
           body: JSON.stringify({ query: q })
         });
         const data = await res.json();
