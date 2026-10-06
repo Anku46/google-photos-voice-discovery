@@ -174,12 +174,81 @@ export default function App() {
 
       <main className="container" style={{ flex: 1, padding: '24px 16px' }}>
         
-        {/* Executive Metrics */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '32px' }}>
-          <MetricCard title="Total Reviews" value={metrics?.total_reviews || "—"} icon={<Inbox />} />
-          <MetricCard title="Retrieval Yield" value={metrics ? `${metrics.yield_percentage.toFixed(1)}%` : "—"} icon={<Search />} />
-          <MetricCard title="Thematic Clusters" value={metrics?.cluster_count || "—"} icon={<Layers />} />
-          <MetricCard title="Top Issues Found" value={topIssues.length || "—"} icon={<AlertCircle />} />
+        {/* Active Dataset Banner */}
+        <div className="card" style={{ padding: '16px 24px', marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--color-bg)', border: '1px solid var(--color-border)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ background: 'rgba(239, 68, 68, 0.2)', padding: '8px', borderRadius: '50%' }}>
+              <Filter size={18} style={{ color: '#ef4444' }} />
+            </div>
+            <div>
+              <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 'bold' }}>Verified Multi-Source Research Dataset Active</h3>
+              <p style={{ margin: 0, fontSize: '12px', color: 'var(--color-text-muted)' }}>
+                Ingested <strong style={{color: '#fff'}}>1,000</strong> raw scraped items • LLM-filtered into <strong style={{color: '#fff'}}>247</strong> high-signal behavioral records
+              </p>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <span style={{ padding: '4px 12px', background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', border: '1px solid rgba(16, 185, 129, 0.2)', borderRadius: '16px', fontSize: '11px' }}>Play Store: 154</span>
+            <span style={{ padding: '4px 12px', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.2)', borderRadius: '16px', fontSize: '11px' }}>Reddit: 40</span>
+            <span style={{ padding: '4px 12px', background: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6', border: '1px solid rgba(59, 130, 246, 0.2)', borderRadius: '16px', fontSize: '11px' }}>App Store: 53</span>
+          </div>
+        </div>
+
+        {/* Detailed Metric Cards */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px', marginBottom: '32px' }}>
+          
+          <div className="card" style={{ padding: '20px', background: 'var(--color-surface)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
+              <span style={{ fontSize: '11px', color: 'var(--color-text-muted)', letterSpacing: '0.5px' }}>TOTAL FEEDBACK ANALYZED</span>
+              <Layers size={14} style={{ color: 'var(--color-accent-teal)' }} />
+            </div>
+            <div style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '8px' }}>
+              {metrics ? Math.round(metrics.total_reviews * (metrics.yield_percentage / 100)) : "—"} <span style={{fontSize: '14px', fontWeight: 'normal', color: 'var(--color-text-muted)'}}>useful data used</span>
+            </div>
+            <div style={{ fontSize: '12px', color: 'var(--color-accent-teal)' }}>
+              Filtered from {metrics?.total_reviews || "—"} raw scraped data
+            </div>
+          </div>
+
+          <div className="card" style={{ padding: '20px', background: 'var(--color-surface)', borderLeft: '4px solid #ef4444' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
+              <span style={{ fontSize: '11px', color: 'var(--color-text-muted)', letterSpacing: '0.5px' }}>TOP APP FRICTION DRIVER</span>
+              <AlertCircle size={14} style={{ color: '#ef4444' }} />
+            </div>
+            <div style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '8px', lineHeight: '1.2' }}>
+              {topIssues.length > 0 ? topIssues[0].title : "—"}
+            </div>
+            <div style={{ fontSize: '12px', color: '#ef4444' }}>
+              {topIssues.length > 0 ? `${Math.round((topIssues[0].review_count / (metrics ? metrics.total_reviews * (metrics.yield_percentage/100) : 1)) * 100)}% of all negative reviews (${topIssues[0].review_count} mentions)` : "—"}
+            </div>
+          </div>
+
+          <div className="card" style={{ padding: '20px', background: 'var(--color-surface)', borderLeft: '4px solid var(--color-accent-violet)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
+              <span style={{ fontSize: '11px', color: 'var(--color-text-muted)', letterSpacing: '0.5px' }}>SECONDARY FRICTION DRIVER</span>
+              <AlertCircle size={14} style={{ color: 'var(--color-accent-violet)' }} />
+            </div>
+            <div style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '8px', lineHeight: '1.2' }}>
+              {topIssues.length > 1 ? topIssues[1].title : "—"}
+            </div>
+            <div style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>
+              {topIssues.length > 1 ? `${Math.round((topIssues[1].review_count / (metrics ? metrics.total_reviews * (metrics.yield_percentage/100) : 1)) * 100)}% of all negative reviews (${topIssues[1].review_count} mentions)` : "—"}
+            </div>
+          </div>
+
+          <div className="card" style={{ padding: '20px', background: 'var(--color-surface)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
+              <span style={{ fontSize: '11px', color: 'var(--color-text-muted)', letterSpacing: '0.5px' }}>AI ENGINE ARCHITECTURE</span>
+              <Server size={14} style={{ color: 'var(--color-accent-teal)' }} />
+            </div>
+            <div style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '8px', lineHeight: '1.2' }}>
+              Groq Llama 3.1 & Grounded RAG
+            </div>
+            <div style={{ fontSize: '12px', color: 'var(--color-accent-teal)' }}>
+              131,072 TPM Capacity • Zero Failover
+            </div>
+          </div>
+
         </div>
 
         <div className="dashboard-grid">
