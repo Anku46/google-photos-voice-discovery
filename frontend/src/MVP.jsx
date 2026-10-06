@@ -178,7 +178,7 @@ export default function MVP({ onClose }) {
             <>
               {/* Search Bar Area */}
               <div style={{ marginBottom: '32px' }}>
-            <h1 style={{ fontSize: '24px', textAlign: 'center', marginBottom: '24px', fontWeight: '400' }}>AI Memory Search</h1>
+            <h1 style={{ fontSize: '24px', textAlign: 'center', marginBottom: '24px', fontWeight: '400', color: '#174ea6' }}>AI Memory Search</h1>
             
             <div style={{ position: 'relative', maxWidth: '700px', margin: '0 auto' }}>
               <div style={{ position: 'absolute', left: '16px', top: '14px', color: '#5f6368' }}>

@@ -77,7 +77,7 @@ export default function Cleanup({ onClose, embedded }) {
         {/* VIEW: Notifications */}
         {view === 'notifications' && (
           <div>
-            <h1 style={{ fontSize: '24px', marginBottom: '8px', fontWeight: '400' }}>Scheduled for Deletion</h1>
+            <h1 style={{ fontSize: '24px', marginBottom: '8px', fontWeight: '400', color: '#174ea6' }}>Scheduled for Deletion</h1>
             <p style={{ color: '#5f6368', marginBottom: '32px' }}>Review items scheduled for automatic cleanup to save storage.</p>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -88,7 +88,7 @@ export default function Cleanup({ onClose, embedded }) {
                     <Copy size={24} />
                   </div>
                   <div style={{ flex: 1 }}>
-                    <h3 style={{ margin: '0 0 4px 0', fontSize: '16px' }}>{duplicates.length} Duplicate Photos</h3>
+                    <h3 style={{ margin: '0 0 4px 0', fontSize: '16px', color: '#174ea6' }}>{duplicates.length} Duplicate Photos</h3>
                     <p style={{ margin: 0, color: '#5f6368', fontSize: '13px' }}>These photos are visually identical to others in your library.</p>
                   </div>
                   <ChevronLeft size={20} style={{ color: '#5f6368', transform: 'rotate(180deg)' }} />
@@ -101,7 +101,7 @@ export default function Cleanup({ onClose, embedded }) {
                     <Clock size={24} />
                   </div>
                   <div style={{ flex: 1 }}>
-                    <h3 style={{ margin: '0 0 4px 0', fontSize: '16px' }}>{inactive.length} Inactive Photos</h3>
+                    <h3 style={{ margin: '0 0 4px 0', fontSize: '16px', color: '#174ea6' }}>{inactive.length} Inactive Photos</h3>
                     <p style={{ margin: 0, color: '#5f6368', fontSize: '13px' }}>Not viewed, clicked, or searched for over a long period.</p>
                   </div>
                   <ChevronLeft size={20} style={{ color: '#5f6368', transform: 'rotate(180deg)' }} />
@@ -121,7 +121,7 @@ export default function Cleanup({ onClose, embedded }) {
         {/* VIEW: Review Duplicates */}
         {view === 'review-dupes' && (
           <div>
-            <h1 style={{ fontSize: '24px', marginBottom: '8px', fontWeight: '400' }}>Review Duplicates</h1>
+            <h1 style={{ fontSize: '24px', marginBottom: '8px', fontWeight: '400', color: '#174ea6' }}>Review Duplicates</h1>
             <p style={{ color: '#5f6368', marginBottom: '32px' }}>These will be permanently deleted in 30 days unless you undo.</p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -145,7 +145,7 @@ export default function Cleanup({ onClose, embedded }) {
         {/* VIEW: Review Inactive */}
         {view === 'review-inactive' && (
           <div>
-            <h1 style={{ fontSize: '24px', marginBottom: '8px', fontWeight: '400' }}>Review Inactive</h1>
+            <h1 style={{ fontSize: '24px', marginBottom: '8px', fontWeight: '400', color: '#174ea6' }}>Review Inactive</h1>
             <p style={{ color: '#5f6368', marginBottom: '32px' }}>These will be permanently deleted in 30 days unless you undo.</p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -169,7 +169,7 @@ export default function Cleanup({ onClose, embedded }) {
         {/* VIEW: Confirm Duplicate Undo */}
         {view === 'confirm-dupe' && selectedPhoto && (
           <div>
-            <h1 style={{ fontSize: '24px', marginBottom: '8px', fontWeight: '400' }}>Are you sure you want to keep this photo?</h1>
+            <h1 style={{ fontSize: '24px', marginBottom: '8px', fontWeight: '400', color: '#174ea6' }}>Are you sure you want to keep this photo?</h1>
             <p style={{ color: '#5f6368', marginBottom: '32px' }}>Here are similar photos you already have in your library.</p>
             
             <div style={{ display: 'flex', gap: '24px', justifyContent: 'center', marginBottom: '48px' }}>
