@@ -1,0 +1,151 @@
+Google Photos Use Case
+
+You are tasked with building an AI-powered user feedback discovery engine for Google Photos. The system should collect and analyze publicly available user reviews from free/accessible app-review channels and use an LLM to identify recurring problems related to searching for vaguely remembered photos.
+
+The objective is not simply to measure whether users are satisfied or dissatisfied. The system should understand what users were trying to retrieve, what they remembered, where their search failed, and why the retrieval experience broke down.
+
+Objective
+
+Design and implement an application that:
+
+Collects publicly available Google Photos app reviews from free/accessible sources
+Uses AI/LLMs to identify reviews related to photo search and retrieval
+Extracts the user's retrieval situation, memory clues, and search experience
+Classifies the problem according to different stages of the retrieval journey
+Identifies recurring patterns and clusters of user problems
+Generates evidence-backed insights and potential opportunity areas for further user research
+System Workflow
+1. Data Ingestion
+Collect Google Photos user reviews from free/publicly accessible app-review channels.
+Possible sources may include:
+Google Play Store reviews
+Apple App Store reviews
+Reddit/public discussion forums, if relevant
+Google Photos Help/Community discussions, if publicly accessible
+Store relevant review information such as:
+Review text
+Rating
+Date
+Source/channel
+App version, if available
+
+Goal: Build a raw dataset of real user feedback without relying on paid review databases.
+
+2. AI-Powered Review Filtering
+
+Use an LLM to identify reviews that contain meaningful evidence about photo discovery, search, or retrieval.
+
+The AI should distinguish between:
+
+General complaints about the app
+Feature requests unrelated to search
+Positive/negative sentiment
+Actual photo retrieval/search experiences
+
+For example:
+
+“I remember taking a picture of the medicine I was prescribed last year, but I can't find it even though I know it's somewhere in my Photos.”
+
+This should be classified as a relevant retrieval experience.
+
+3. Retrieval Experience Extraction
+
+For each relevant review, use the LLM to extract structured information such as:
+
+What was the user trying to find?
+What did the user remember about the photo?
+What clues were available?
+Object
+Person
+Place
+Event
+Approximate time
+Text/document
+Visual appearance
+What did the user search for?
+What happened when they searched?
+Did they eventually find the photo?
+What workaround did they use?
+
+Example:
+
+Review	Memory	Search Attempt	Outcome
+“Can't find the photo of my old prescription”	Medicine/prescription, approximate year	Keyword search	Failed
+4. Retrieval Failure Classification
+
+Map each relevant review to the photo retrieval journey:
+
+Remember → Express → Understand → Retrieve → Recognize → Successful Retrieval
+
+The LLM should identify the most likely failure point:
+
+Memory Expression Gap
+User remembers the photo but cannot translate the memory into searchable clues.
+Interpretation Gap
+User provides clues, but the system does not understand the intended meaning/context.
+Retrieval Gap
+The system understands the query but does not surface the relevant photo.
+Recognition Gap
+Relevant photos may be present, but the user struggles to identify the correct one among results.
+Refinement Gap
+The initial search fails and the user does not know how to reformulate or refine the search.
+
+These categories are analytical hypotheses, not assumed findings. The discovery engine should determine which patterns actually appear in the data.
+
+5. AI Clustering & Pattern Discovery
+
+Use the LLM to group similar retrieval experiences into recurring themes.
+
+For example:
+
+Theme: “I know the photo exists, but I don't remember enough details.”
+
+Possible evidence:
+
+“I know I took a photo of it but can't remember when.”
+“I remember the place but not the name.”
+“I don't remember the exact date.”
+“Search doesn't find what I'm looking for.”
+
+The system should identify:
+
+Frequency of each theme
+Common retrieval scenarios
+Common failure stages
+Representative user reviews
+Differences between user segments/scenarios
+Potential opportunity areas
+6. AI Insight Generation
+
+The LLM should convert the clustered evidence into PM-ready insights, rather than simply producing sentiment summaries.
+
+For each major theme, generate:
+
+User situation
+Observed behavior
+Retrieval failure
+Likely underlying problem
+Evidence/review examples
+Frequency or prevalence within the collected dataset
+Potential opportunity for further investigation
+
+Example output:
+
+Observed pattern: Users often remember the visual context of a photo but cannot recall the exact searchable terms, date, or album.
+
+Potential opportunity: Explore whether Google Photos can better support searches based on incomplete contextual memories rather than requiring users to formulate precise queries.
+
+7. Output Display
+
+Present the discovery results in a user-friendly research dashboard containing:
+
+Total reviews collected
+Relevant retrieval reviews
+Retrieval failure categories
+Top recurring themes
+Retrieval scenarios
+Representative user quotes
+Frequency of each problem
+User workarounds
+Potential opportunity areas
+Links to original reviews/sources
