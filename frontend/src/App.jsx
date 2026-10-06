@@ -98,48 +98,54 @@ export default function App() {
     }
   };
 
-  const handleChat = async (e) => {
-    if (e.key === 'Enter' && chatQuery.trim()) {
-      const q = chatQuery;
-      setChatQuery('');
-      setChatHistory(prev => [...prev, { role: 'user', content: q }]);
-      try {
-        const res = await fetch(`${API_BASE}/api/chat`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'X-API-Key': import.meta.env.VITE_API_SECRET_KEY || 'development_only' },
-          body: JSON.stringify({ query: q })
-        });
-        if (!res.ok) throw new Error("Backend offline");
-        const data = await res.json();
-        setChatHistory(prev => [...prev, { role: 'ai', content: data.answer }]);
-      } catch(err) {
-        // Fallback static AI Copilot
-        const lowerQ = q.toLowerCase();
-        let answer = "I am currently in Static Demo Mode. Connect the backend to unlock live generative insights. Try asking 'what are the top issues?', 'what is the sentiment?', or 'what do you recommend?'";
-        
-        if (lowerQ.includes('loss') || lowerQ.includes('delete') || lowerQ.includes('missing')) {
-          answer = "Based on our analysis, 'Unexpected Photo Deletion' is the #1 issue. Users frequently report losing photos without clear warnings, especially related to 'out of space' errors or sync issues. E.g., 'Lost nearly 550 photos this is insane??'";
-        } else if (lowerQ.includes('ai') || lowerQ.includes('search')) {
-          answer = "Users complain that recent AI updates have broken traditional face grouping and search. They want an option to toggle AI features off. E.g., 'AI updates have made this app unusable'.";
-        } else if (lowerQ.includes('storage') || lowerQ.includes('cost') || lowerQ.includes('wifi')) {
-          answer = "Storage control is a major friction point. Users are frustrated by the lack of a 'Wi-Fi only' backup toggle, which inadvertently consumes their mobile data.";
-        } else if (lowerQ.includes('ui') || lowerQ.includes('thumbnail')) {
-          answer = "Recent UI redesigns introduced uneven thumbnail sizes and removed familiar editing tools, confusing users.";
-        } else if (lowerQ.includes('hello') || lowerQ.includes('hi ') || lowerQ === 'hi') {
-          answer = "Hello! I am the Google Photos Discovery Engine Copilot. You can ask me to summarize the top issues, analyze sentiment, or pull representative user quotes.";
-        } else if (lowerQ.includes('top issue') || lowerQ.includes('summarize')) {
-          answer = "The top 3 issues are: 1. Unexpected Photo Deletion, 2. AI Features Breaking Search, and 3. Lack of Backup Control.";
-        } else if (lowerQ.includes('sentiment') || lowerQ.includes('how do users feel')) {
-          answer = "The overall sentiment is highly negative in this dataset. Users are primarily frustrated by data loss, broken AI search features, and uncontrolled mobile data usage.";
-        } else if (lowerQ.includes('recommend') || lowerQ.includes('fix')) {
-          answer = "Based on the feedback, my top recommendations for the product team are: 1. Add a confirmation step before cloud-initiated deletions, 2. Allow users to toggle AI features off, and 3. Add a Wi-Fi-only backup option.";
-        } else if (lowerQ.includes('how many') || lowerQ.includes('dataset') || lowerQ.includes('reviews')) {
-          answer = "I analyzed 39 recent critical (1-star and 2-star) reviews from the Google Play Store and Apple App Store for this demo.";
-        }
-        setTimeout(() => {
-          setChatHistory(prev => [...prev, { role: 'ai', content: answer }]);
-        }, 600);
+  const submitChat = async (q) => {
+    if (!q.trim()) return;
+    setChatHistory(prev => [...prev, { role: 'user', content: q }]);
+    try {
+      const res = await fetch(`${API_BASE}/api/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-API-Key': import.meta.env.VITE_API_SECRET_KEY || 'development_only' },
+        body: JSON.stringify({ query: q })
+      });
+      if (!res.ok) throw new Error("Backend offline");
+      const data = await res.json();
+      setChatHistory(prev => [...prev, { role: 'ai', content: data.answer }]);
+    } catch(err) {
+      // Fallback static AI Copilot
+      const lowerQ = q.toLowerCase();
+      let answer = "I am currently in Static Demo Mode. Connect the backend to unlock live generative insights. Try asking 'what are the top issues?', 'what is the sentiment?', or 'what do you recommend?'";
+      
+      if (lowerQ.includes('loss') || lowerQ.includes('delete') || lowerQ.includes('missing')) {
+        answer = "Based on our analysis, 'Unexpected Photo Deletion' is the #1 issue. Users frequently report losing photos without clear warnings, especially related to 'out of space' errors or sync issues. E.g., 'Lost nearly 550 photos this is insane??'";
+      } else if (lowerQ.includes('ai') || lowerQ.includes('search')) {
+        answer = "Users complain that recent AI updates have broken traditional face grouping and search. They want an option to toggle AI features off. E.g., 'AI updates have made this app unusable'.";
+      } else if (lowerQ.includes('storage') || lowerQ.includes('cost') || lowerQ.includes('wifi')) {
+        answer = "Storage control is a major friction point. Users are frustrated by the lack of a 'Wi-Fi only' backup toggle, which inadvertently consumes their mobile data.";
+      } else if (lowerQ.includes('ui') || lowerQ.includes('thumbnail')) {
+        answer = "Recent UI redesigns introduced uneven thumbnail sizes and removed familiar editing tools, confusing users.";
+      } else if (lowerQ.includes('hello') || lowerQ.includes('hi ') || lowerQ === 'hi') {
+        answer = "Hello! I am the Google Photos Discovery Engine Copilot. You can ask me to summarize the top issues, analyze sentiment, or pull representative user quotes.";
+      } else if (lowerQ.includes('top issue') || lowerQ.includes('summarize')) {
+        answer = "The top 3 issues are: 1. Unexpected Photo Deletion, 2. AI Features Breaking Search, and 3. Lack of Backup Control.";
+      } else if (lowerQ.includes('sentiment') || lowerQ.includes('how do users feel')) {
+        answer = "The overall sentiment is highly negative in this dataset. Users are primarily frustrated by data loss, broken AI search features, and uncontrolled mobile data usage.";
+      } else if (lowerQ.includes('recommend') || lowerQ.includes('solution') || lowerQ.includes('fix')) {
+        answer = "Based on the feedback, my top recommendations for the product team are: 1. Add a confirmation step before cloud-initiated deletions, 2. Allow users to toggle AI features off, and 3. Add a Wi-Fi-only backup option.";
+      } else if (lowerQ.includes('how many') || lowerQ.includes('dataset') || lowerQ.includes('reviews') || lowerQ.includes('data')) {
+        answer = "I analyzed 39 recent critical (1-star and 2-star) reviews from the Google Play Store and Apple App Store for this demo. The largest cluster, Unexpected Deletions, accounts for ~25% of negative mentions.";
+      } else if (lowerQ.includes('example') || lowerQ.includes('quote')) {
+        answer = "Here is a real quote from a user regarding our top issue: 'Lost nearly 550 photos this is insane??'. Another user facing AI issues mentioned: 'AI updates have made this app unusable'.";
       }
+      setTimeout(() => {
+        setChatHistory(prev => [...prev, { role: 'ai', content: answer }]);
+      }, 600);
+    }
+  };
+
+  const handleChat = (e) => {
+    if (e.key === 'Enter' && chatQuery.trim()) {
+      submitChat(chatQuery);
+      setChatQuery('');
     }
   };
 
@@ -266,6 +272,21 @@ export default function App() {
                     {msg.content}
                   </div>
                 ))}
+              </div>
+
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '12px' }}>
+                <button onClick={() => submitChat("Can you summarize the top issues?")} style={{ background: 'var(--color-surface-hover)', border: '1px solid var(--color-border)', borderRadius: '16px', padding: '6px 12px', fontSize: '11px', color: '#CBD5E1', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  📊 Top issues
+                </button>
+                <button onClick={() => submitChat("Can you give me an example quote of data deletion?")} style={{ background: 'var(--color-surface-hover)', border: '1px solid var(--color-border)', borderRadius: '16px', padding: '6px 12px', fontSize: '11px', color: '#CBD5E1', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  💬 Example quote
+                </button>
+                <button onClick={() => submitChat("What do you recommend as a solution to these issues?")} style={{ background: 'var(--color-surface-hover)', border: '1px solid var(--color-border)', borderRadius: '16px', padding: '6px 12px', fontSize: '11px', color: '#CBD5E1', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  💡 Solutions
+                </button>
+                <button onClick={() => submitChat("How many reviews did you analyze in this dataset?")} style={{ background: 'var(--color-surface-hover)', border: '1px solid var(--color-border)', borderRadius: '16px', padding: '6px 12px', fontSize: '11px', color: '#CBD5E1', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  🗄️ Dataset info
+                </button>
               </div>
 
               <input 
