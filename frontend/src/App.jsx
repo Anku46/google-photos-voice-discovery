@@ -115,7 +115,8 @@ export default function App() {
       } catch(err) {
         // Fallback static AI Copilot
         const lowerQ = q.toLowerCase();
-        let answer = "I am currently in Static Demo Mode. Connect the backend to unlock live generative insights.";
+        let answer = "I am currently in Static Demo Mode. Connect the backend to unlock live generative insights. Try asking 'what are the top issues?', 'what is the sentiment?', or 'what do you recommend?'";
+        
         if (lowerQ.includes('loss') || lowerQ.includes('delete') || lowerQ.includes('missing')) {
           answer = "Based on our analysis, 'Unexpected Photo Deletion' is the #1 issue. Users frequently report losing photos without clear warnings, especially related to 'out of space' errors or sync issues. E.g., 'Lost nearly 550 photos this is insane??'";
         } else if (lowerQ.includes('ai') || lowerQ.includes('search')) {
@@ -124,6 +125,16 @@ export default function App() {
           answer = "Storage control is a major friction point. Users are frustrated by the lack of a 'Wi-Fi only' backup toggle, which inadvertently consumes their mobile data.";
         } else if (lowerQ.includes('ui') || lowerQ.includes('thumbnail')) {
           answer = "Recent UI redesigns introduced uneven thumbnail sizes and removed familiar editing tools, confusing users.";
+        } else if (lowerQ.includes('hello') || lowerQ.includes('hi ') || lowerQ === 'hi') {
+          answer = "Hello! I am the Google Photos Discovery Engine Copilot. You can ask me to summarize the top issues, analyze sentiment, or pull representative user quotes.";
+        } else if (lowerQ.includes('top issue') || lowerQ.includes('summarize')) {
+          answer = "The top 3 issues are: 1. Unexpected Photo Deletion, 2. AI Features Breaking Search, and 3. Lack of Backup Control.";
+        } else if (lowerQ.includes('sentiment') || lowerQ.includes('how do users feel')) {
+          answer = "The overall sentiment is highly negative in this dataset. Users are primarily frustrated by data loss, broken AI search features, and uncontrolled mobile data usage.";
+        } else if (lowerQ.includes('recommend') || lowerQ.includes('fix')) {
+          answer = "Based on the feedback, my top recommendations for the product team are: 1. Add a confirmation step before cloud-initiated deletions, 2. Allow users to toggle AI features off, and 3. Add a Wi-Fi-only backup option.";
+        } else if (lowerQ.includes('how many') || lowerQ.includes('dataset') || lowerQ.includes('reviews')) {
+          answer = "I analyzed 39 recent critical (1-star and 2-star) reviews from the Google Play Store and Apple App Store for this demo.";
         }
         setTimeout(() => {
           setChatHistory(prev => [...prev, { role: 'ai', content: answer }]);
