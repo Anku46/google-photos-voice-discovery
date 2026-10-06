@@ -72,10 +72,11 @@ export default function App() {
           { review_count: 35, cluster_title: 'Missing Backed-Up Content', cluster_description: 'Sync inconsistencies cause backed-up photos to disappear.', is_noise_bucket: true }
         ]);
 
-        const fallbackTopIssues = fallbackData.top_5_issues.map((issue, idx) => ({
-          rank: issue.rank,
-          title: issue.issue_title,
-          category: issue.category,
+        const rawIssues = fallbackData?.top_5_issues || fallbackData?.default?.top_5_issues || [];
+        const fallbackTopIssues = rawIssues.map((issue, idx) => ({
+          rank: issue.rank || idx + 1,
+          title: issue.issue_title || "Unknown Issue",
+          category: issue.category || "General",
           impact_score: 9.8 - (idx * 0.5),
           review_count: 120 - (idx * 20)
         }));
